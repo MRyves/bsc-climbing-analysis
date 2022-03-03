@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:606a20e906b24d64bec7b6144caa816b63be229842c7ea2e2942dc16b1bfa418
-size 765
+# Contributing to the TensorFlow Object Detection API
+
+Patches to TensorFlow Object Detection API are welcome!
+
+We require contributors to fill out either the individual or corporate
+Contributor License Agreement (CLA).
+
+  * If you are an individual writing original source code and you're sure you own the intellectual property, then you'll need to sign an [individual CLA](http://code.google.com/legal/individual-cla-v1.0.html).
+  * If you work for a company that wants to allow you to contribute your work, then you'll need to sign a [corporate CLA](http://code.google.com/legal/corporate-cla-v1.0.html).
+
+Please follow the
+[TensorFlow contributing guidelines](https://github.com/tensorflow/tensorflow/blob/master/CONTRIBUTING.md)
+when submitting pull requests.
