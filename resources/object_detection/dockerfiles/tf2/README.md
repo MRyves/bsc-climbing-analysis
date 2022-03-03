@@ -1,3 +1,11 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0c0b2e8cfcbf2e41671e1b75d208010b9391cfdd4ce693649da2fae1e575eee4
-size 250
+# TensorFlow Object Detection on Docker
+
+These instructions are experimental.
+
+## Building and running:
+
+```bash
+# From the root of the git repository
+docker build -f research/object_detection/dockerfiles/tf2/Dockerfile -t od .
+docker run -it od
+```
