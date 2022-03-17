@@ -1,6 +1,7 @@
 import numpy as np
+from cv2 import VideoWriter_fourcc, circle
 
-from cv2 import VideoWriter_fourcc, VideoWriter, circle
+from writer.OutputVideoWriter import OutputVideoWriter
 
 SOLID_BLACK_COLOR = (41, 41, 41)
 AVI_FORMAT = VideoWriter_fourcc(*"MJPG")
@@ -17,41 +18,32 @@ def draw_circle(out_frame, point):
 
 
 class BirdViewWriter:
-    def __init__(self, width, height, fps, output_path):
-        self.frame_width = int(width)
-        self.frame_height = int(height)
-        self.fps = int(fps)
+    def __init__(self, output_path, fps, shape):
         self.output_path = output_path
+        self.fps = fps
+        self.frame_width = shape[0]
+        self.frame_height = shape[1]
         self.blank_image = np.zeros((self.frame_height, self.frame_width, 3), np.uint8)
         self.blank_image[:] = SOLID_BLACK_COLOR
-        self.__video_writer = None
         self.current_frame = 1
+        self.writer = OutputVideoWriter(self.output_path, self.fps, shape)
 
     def __del__(self):
-        if self.__video_writer is not None:
-            self.__video_writer.release()
-            self.__video_writer = None
+        self.writer.release()
 
     def digest(self, person_boxes):
         out_frame = np.copy(self.blank_image)
         if len(person_boxes) > 0:
             print(f'Digesting a total of {len(person_boxes)} person detections')
-            for i in range(len(person_boxes)):
-                x, y = self.middle_of_box(person_boxes[i])
+            for person_box in person_boxes:
+                x, y = self.middle_of_box(person_box)
                 out_frame = draw_circle(out_frame, (x, y))
 
-        self.video_writer.write(out_frame)
+        self.writer.write(out_frame)
         self.current_frame += 1
 
     def release(self):
         self.__del__()
-
-    @property
-    def video_writer(self):
-        if self.__video_writer is None:
-            self.__video_writer = VideoWriter(self.output_path, AVI_FORMAT, self.fps,
-                                              (self.frame_width, self.frame_height))
-        return self.__video_writer
 
     def middle_of_box(self, box):
         x_mid = (box[1] * self.frame_width + box[3] * self.frame_width) / 2

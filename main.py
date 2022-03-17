@@ -27,9 +27,8 @@ def load_image_into_numpy_array(path):
 
 if __name__ == "__main__":
     video_reader = VideoReader(f'resources/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}.{VIDEO_FORMAT}', 1)
-    bird_view = BirdViewWriter(video_reader.video_shape[0], video_reader.video_shape[1],
-                               video_reader.consider_frames_per_second,
-                               f'./results/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}_birdview.avi')
+    bird_view = BirdViewWriter(f'./results/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}_birdview.avi',
+                               video_reader.consider_frames_per_second, video_reader.video_shape)
     video_writer = OutputVideoWriter(f'./results/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}.avi',
                                      video_reader.consider_frames_per_second, video_reader.video_shape)
     model = Model(model_name='Faster R-CNN ResNet152 V1 1024x1024')
