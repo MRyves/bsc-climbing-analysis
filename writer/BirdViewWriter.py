@@ -35,7 +35,7 @@ class BirdViewWriter:
     def digest(self, person_boxes):
         out_frame = np.copy(self.blank_image)
         if len(person_boxes) > 0:
-            print('Digesting a total of {} person detections'.format(len(person_boxes)))
+            print(f'Digesting a total of {len(person_boxes)} person detections')
             for i in range(len(person_boxes)):
                 x, y = self.middle_of_box(person_boxes[i])
                 out_frame = draw_circle(out_frame, (x, y))
@@ -44,9 +44,7 @@ class BirdViewWriter:
         self.current_frame += 1
 
     def release(self):
-        if self.__video_writer is not None:
-            self.__video_writer.release()
-            self.__video_writer = None
+        self.__del__()
 
     @property
     def video_writer(self):
