@@ -1,19 +1,21 @@
+import cv2 as cv
 import numpy as np
-from cv2 import VideoWriter_fourcc, circle
 
 from writer.OutputVideoWriter import OutputVideoWriter
 
 SOLID_BLACK_COLOR = (41, 41, 41)
-AVI_FORMAT = VideoWriter_fourcc(*"MJPG")
+SOLID_YELLOW = (255, 255, 0)
+AVI_FORMAT = cv.VideoWriter_fourcc(*"MJPG")
 
 
-def draw_circle(out_frame, point):
-    return circle(
+def draw_circle(out_frame, circle_number, point):
+    out_frame = cv.putText(out_frame, str(circle_number), point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_YELLOW, 2)
+    return cv.circle(
         out_frame,
         point,
         10,
         (192, 133, 156),
-        20
+        2
     )
 
 
@@ -34,10 +36,11 @@ class BirdViewWriter:
     def digest(self, person_boxes):
         out_frame = np.copy(self.blank_image)
         if len(person_boxes) > 0:
+            person_boxes_ordered = self.order_boxes(person_boxes)
             print(f'Digesting a total of {len(person_boxes)} person detections')
-            for person_box in person_boxes:
+            for i, person_box in enumerate(person_boxes_ordered):
                 x, y = self.middle_of_box(person_box)
-                out_frame = draw_circle(out_frame, (x, y))
+                out_frame = draw_circle(out_frame, i, (x, y))
 
         self.writer.write(out_frame)
         self.current_frame += 1
@@ -49,3 +52,8 @@ class BirdViewWriter:
         x_mid = (box[1] * self.frame_width + box[3] * self.frame_width) / 2
         y_mid = (box[0] * self.frame_height + box[2] * self.frame_height) / 2
         return int(x_mid), int(y_mid)
+
+    def order_boxes(self, person_boxes):
+        person_boxes = person_boxes[person_boxes[:, 2].argsort()]
+        person_boxes = person_boxes[person_boxes[:, 1].argsort(kind='merge')]
+        return person_boxes

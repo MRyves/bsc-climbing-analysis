@@ -74,7 +74,7 @@ COCO17_HUMAN_POSE_KEYPOINTS = [(0, 1),
 
 
 class Model:
-    def __init__(self, model_name, threshold=.3):
+    def __init__(self, model_name, threshold=.75):
         self.model_name = model_name
         self.hub_model = None
         self.category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
