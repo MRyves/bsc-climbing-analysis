@@ -33,7 +33,7 @@ class BirdViewWriter:
     def __del__(self):
         self.writer.release()
 
-    def digest(self, person_boxes):
+    def digest(self, person_boxes, draw_polygon=False):
         out_frame = np.copy(self.blank_image)
         if len(person_boxes) > 0:
             person_boxes_ordered = self.order_boxes(person_boxes)
@@ -42,8 +42,29 @@ class BirdViewWriter:
                 x, y = self.middle_of_box(person_box)
                 out_frame = draw_circle(out_frame, i, (x, y))
 
+            if draw_polygon:
+                self.draw_polygon(out_frame, person_boxes_ordered)
         self.writer.write(out_frame)
         self.current_frame += 1
+
+    def draw_polygon(self, out_frame, person_boxes):
+        if len(person_boxes) != 2:
+            print(f'Warning: length of person_boxes list is not 2 (it is {len(person_boxes)}). \n'
+                  'Therefore it is impossible to draw the polygon...')
+            return out_frame
+        edges = [self.middle_of_box(person_boxes[0]), self.middle_of_box(person_boxes[1])]
+
+        # move first box to the right:
+        box_height = person_boxes[0][2] - person_boxes[0][0]
+        third_edge = [person_boxes[0][0], person_boxes[0][1] + box_height, person_boxes[0][2],
+                      person_boxes[0][3] + box_height]
+
+        edges.append(self.middle_of_box(third_edge))
+
+        # draw polygon:
+        edges = np.array(edges, np.int32)
+        edge_pts = edges.reshape((-1, 1, 2))
+        return cv.polylines(out_frame, [edge_pts], True, color=(0, 0, 255), thickness=10)
 
     def release(self):
         self.__del__()

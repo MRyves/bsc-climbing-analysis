@@ -1,18 +1,16 @@
 import time
 
-import cv2
 import numpy as np
 import tensorflow as tf
 from PIL import Image
-from cv2 import VideoWriter, VideoWriter_fourcc
 from six import BytesIO
 
-from writer.BirdViewWriter import BirdViewWriter
 from VideoReader import VideoReader
 from model import Model
+from writer.BirdViewWriter import BirdViewWriter
 from writer.OutputVideoWriter import OutputVideoWriter
 
-VIDEO_NAME = 'VID_20220309_212533'
+VIDEO_NAME = 'VID_20220309_212145'
 VIDEO_FORMAT = 'mp4'
 VIDEO_SUB_FOLDER = 'second_batch'
 
@@ -26,7 +24,7 @@ def load_image_into_numpy_array(path):
 
 
 if __name__ == "__main__":
-    video_reader = VideoReader(f'resources/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}.{VIDEO_FORMAT}', 1)
+    video_reader = VideoReader(f'resources/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}.{VIDEO_FORMAT}', .75)
     bird_view = BirdViewWriter(f'./results/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}_birdview.avi',
                                video_reader.consider_frames_per_second, video_reader.video_shape)
     video_writer = OutputVideoWriter(f'./results/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}.avi',
@@ -38,7 +36,7 @@ if __name__ == "__main__":
         print(f'Starting analysis of frame {video_reader.current_frame}')
         starting_time = time.process_time()
         analyzed_frame, person_boxes = model.analyze(frame)
-        bird_view.digest(person_boxes)
+        bird_view.digest(person_boxes, True)
         elapsed_time = time.process_time() - starting_time
         print(f'Analyzed frame number: {str(video_reader.current_frame)} in {str(elapsed_time)}')
         video_writer.write(analyzed_frame)
