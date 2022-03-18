@@ -9,6 +9,7 @@ AVI_FORMAT = cv.VideoWriter_fourcc(*"MJPG")
 
 
 def draw_circle(out_frame, circle_number, point):
+    print(f"Drawing circle number '{circle_number}' at {point}")
     out_frame = cv.putText(out_frame, str(circle_number), point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_YELLOW, 2)
     return cv.circle(
         out_frame,
@@ -17,6 +18,29 @@ def draw_circle(out_frame, circle_number, point):
         (192, 133, 156),
         2
     )
+
+
+class BirdViewWriter2:
+    def __init__(self, output_writer: OutputVideoWriter, frame_shape: tuple):
+        self.output_writer = output_writer
+        self.blank_image = np.zeros((frame_shape[1], frame_shape[0], 3), np.uint8)
+        self.blank_image[:] = SOLID_BLACK_COLOR
+
+    def __del__(self):
+        self.release()
+
+    def write(self, circles, polygon_vertices):
+        out_frame = np.copy(self.blank_image)
+        for i, circle in enumerate(circles):
+            out_frame = draw_circle(out_frame, i, circle)
+        if len(polygon_vertices) == 3:
+            polygon_vertices = np.array(polygon_vertices, np.int32)
+            polygon_vertices = polygon_vertices.reshape((-1, 1, 2))
+            out_frame = cv.polylines(out_frame, [polygon_vertices], True, color=(0, 0, 255), thickness=10)
+        self.output_writer.write(out_frame)
+
+    def release(self):
+        self.output_writer.release()
 
 
 class BirdViewWriter:
