@@ -8,7 +8,6 @@ from six import BytesIO
 from RiskAnalysis import RiskAnalysis
 from VideoReader import VideoReader
 from model import Model
-from writer.BirdViewWriter import BirdViewWriter
 from writer.OutputVideoWriter import OutputVideoWriter
 
 VIDEO_NAME = 'VID_20220309_212533'
@@ -26,8 +25,6 @@ def load_image_into_numpy_array(path):
 
 if __name__ == "__main__":
     video_reader = VideoReader(f'resources/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}.{VIDEO_FORMAT}', 1)
-    # bird_view = BirdViewWriter(f'./results/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}_birdview.avi',
-    #                            video_reader.consider_frames_per_second, video_reader.video_shape)
     bird_view_2 = OutputVideoWriter(f'./results/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}_birdview.avi',
                                     video_reader.consider_frames_per_second, video_reader.video_shape)
     analyzer = RiskAnalysis(video_reader.video_shape, bird_view_2)
@@ -40,7 +37,6 @@ if __name__ == "__main__":
         print(f'Starting analysis of frame {video_reader.current_frame}')
         starting_time = time.process_time()
         analyzed_frame, person_boxes = model.analyze(frame)
-        # bird_view.digest(person_boxes, True)
         analyzer.analyze(person_boxes)
         elapsed_time = time.process_time() - starting_time
         print(f'Analyzed frame number: {str(video_reader.current_frame)} in {str(elapsed_time)}')
