@@ -32,6 +32,12 @@ def add_angle(out_frame, angle, point):
     return cv.putText(out_frame, text, point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_YELLOW, 2)
 
 
+def add_wall_distance(out_frame, securer_wall_distance, point):
+    text = f'Estimated distance to wall: {securer_wall_distance:.2f} cm' if securer_wall_distance != -1 else \
+        "Estimated distance to wall: N/A"
+    return cv.putText(out_frame, text, point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_YELLOW, 2)
+
+
 class BirdViewWriter:
     def __init__(self, output_writer: OutputVideoWriter, frame_shape: tuple):
         self.output_writer = output_writer
@@ -42,12 +48,14 @@ class BirdViewWriter:
     def __del__(self):
         self.release()
 
-    def write(self, circles, polygon_vertices, angle):
+    def write(self, circles, polygon_vertices, angle, securer_wall_distance):
         out_frame = np.copy(self.blank_image)
         for i, circle in enumerate(circles):
             out_frame = draw_circle(out_frame, i, circle)
         out_frame = draw_polygon(out_frame, polygon_vertices)
-        out_frame = add_angle(out_frame, angle, (self.frame_shape[0] - 250, self.frame_shape[1] - 50))
+        out_frame = add_angle(out_frame, angle, (self.frame_shape[0] - 250, self.frame_shape[1] - 100))
+        out_frame = add_wall_distance(out_frame, securer_wall_distance,
+                                      (self.frame_shape[0] - 450, self.frame_shape[1] - 50))
         self.output_writer.write(out_frame)
 
     def release(self):

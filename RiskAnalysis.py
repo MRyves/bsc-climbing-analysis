@@ -22,10 +22,16 @@ def calc_angle(polygon_vertices):
         return -1
 
 
+def calc_d(a, b, c):
+    return (b * c / a) - b
+
+
 class RiskAnalysis:
     def __init__(self, frame_shape, output_writer=None):
         self.output_writer = None
         self.frame_shape = frame_shape
+        self.initial_securer_height = None
+        self.initial_securer_wall_distance = 80
         if output_writer is not None:
             self.output_writer = BirdViewWriter(output_writer, self.frame_shape)
 
@@ -38,16 +44,28 @@ class RiskAnalysis:
         box_centers = [self.__middle_of_box(box) for box in person_boxes]
         polygon_vertices = self.__calc_polygon_vertices(person_boxes)
         angle = calc_angle(polygon_vertices)
+        securer_wall_distance = self.calc_distance(person_boxes)
         print(f'Calculated angle: {angle} degrees')
-        self.write(box_centers, polygon_vertices, angle)
+        print(f'Estimated distance to wall: {securer_wall_distance} cm')
+        self.write(box_centers, polygon_vertices, angle, securer_wall_distance)
+
+    def calc_distance(self, person_boxes):
+        if len(person_boxes) != 2:
+            return -1
+        securer_height = abs(person_boxes[1][0] - person_boxes[1][2]) * self.frame_height
+        if self.initial_securer_height is None:
+            self.initial_securer_height = securer_height
+            return self.initial_securer_wall_distance
+        d = calc_d(self.initial_securer_height, self.init_b_distance, securer_height)
+        return math.sqrt((self.init_b_distance + d) ** 2 - (securer_height / 2) ** 2)
 
     def finished_analysis(self):
         if self.has_output_writer:
             self.output_writer.release()
 
-    def write(self, circles, polygon_edges, angle):
+    def write(self, circles, polygon_edges, angle, securer_wall_distance):
         if self.has_output_writer:
-            self.output_writer.write(circles, polygon_edges, angle)
+            self.output_writer.write(circles, polygon_edges, angle, securer_wall_distance)
 
     def __calc_polygon_vertices(self, person_boxes: np.ndarray):
         if len(person_boxes) != 2:
@@ -65,6 +83,12 @@ class RiskAnalysis:
         x_mid = (box[1] * self.frame_width + box[3] * self.frame_width) / 2
         y_mid = (box[0] * self.frame_height + box[2] * self.frame_height) / 2
         return int(x_mid), int(y_mid)
+
+    @property
+    def init_b_distance(self):
+        if self.initial_securer_height is None:
+            return None
+        return math.sqrt(self.initial_securer_wall_distance ** 2 + (self.initial_securer_height / 2) ** 2)
 
     @property
     def has_output_writer(self):
