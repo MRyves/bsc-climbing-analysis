@@ -5,7 +5,7 @@ import tensorflow as tf
 from PIL import Image
 from six import BytesIO
 
-from RiskAnalysis import RiskAnalysis
+from risk.RiskAnalysis import RiskAnalysis
 from VideoReader import VideoReader
 from model import Model
 from writer.OutputVideoWriter import OutputVideoWriter
