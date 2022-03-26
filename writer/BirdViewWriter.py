@@ -27,20 +27,27 @@ def draw_polygon(out_frame, polygon_vertices):
     return out_frame
 
 
+def add_angle(out_frame, angle, point):
+    text = f'Angle: {angle:.2f} Deg' if angle != -1 else "Angle: N/A"
+    return cv.putText(out_frame, text, point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_YELLOW, 2)
+
+
 class BirdViewWriter:
     def __init__(self, output_writer: OutputVideoWriter, frame_shape: tuple):
         self.output_writer = output_writer
+        self.frame_shape = frame_shape
         self.blank_image = np.zeros((frame_shape[1], frame_shape[0], 3), np.uint8)
         self.blank_image[:] = SOLID_BLACK_COLOR
 
     def __del__(self):
         self.release()
 
-    def write(self, circles, polygon_vertices):
+    def write(self, circles, polygon_vertices, angle):
         out_frame = np.copy(self.blank_image)
         for i, circle in enumerate(circles):
             out_frame = draw_circle(out_frame, i, circle)
         out_frame = draw_polygon(out_frame, polygon_vertices)
+        out_frame = add_angle(out_frame, angle, (self.frame_shape[0] - 250, self.frame_shape[1] - 50))
         self.output_writer.write(out_frame)
 
     def release(self):

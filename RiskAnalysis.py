@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 
 from writer.BirdViewWriter import BirdViewWriter
@@ -7,6 +9,17 @@ def order_boxes(person_boxes):
     person_boxes = person_boxes[person_boxes[:, 2].argsort()]
     person_boxes = person_boxes[person_boxes[:, 1].argsort(kind='merge')]
     return person_boxes
+
+
+def calc_angle(polygon_vertices):
+    if len(polygon_vertices) == 3:
+        a = polygon_vertices[0]
+        b = polygon_vertices[2]
+        c = polygon_vertices[1]
+        ang = math.degrees(math.atan2(c[1] - b[1], c[0] - b[0]) - math.atan2(a[1] - b[1], a[0] - b[0]))
+        return ang + 360 if ang < 0 else ang
+    else:
+        return -1
 
 
 class RiskAnalysis:
@@ -24,15 +37,17 @@ class RiskAnalysis:
         person_boxes = order_boxes(person_boxes)
         box_centers = [self.__middle_of_box(box) for box in person_boxes]
         polygon_vertices = self.__calc_polygon_vertices(person_boxes)
-        self.write(box_centers, polygon_vertices)
+        angle = calc_angle(polygon_vertices)
+        print(f'Calculated angle: {angle} degrees')
+        self.write(box_centers, polygon_vertices, angle)
 
     def finished_analysis(self):
         if self.has_output_writer:
             self.output_writer.release()
 
-    def write(self, circles, polygon_edges):
+    def write(self, circles, polygon_edges, angle):
         if self.has_output_writer:
-            self.output_writer.write(circles, polygon_edges)
+            self.output_writer.write(circles, polygon_edges, angle)
 
     def __calc_polygon_vertices(self, person_boxes: np.ndarray):
         if len(person_boxes) != 2:
