@@ -29,7 +29,7 @@ class FixPointRisk:
         closest_fix_point = self.__find_closest_fix_point(climber_pos)
         print(f'Climber position: {climber_pos}')
         print(f'Closest fix point: {closest_fix_point}')
-        return
+        return self.fix_points_list
 
     def __find_closest_fix_point(self, climber_pos):
         closest_fix_point = None
