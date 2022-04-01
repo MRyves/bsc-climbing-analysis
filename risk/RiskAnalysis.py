@@ -20,7 +20,7 @@ class RiskAnalysis:
         self.frame_shape = frame_shape
         self.angle_risk = AngleRisk(frame_shape)
         self.wall_distance_risk = WallDistanceRisk(self.frame_shape[1])
-        self.fix_point_risk = FixPointRisk()
+        self.fix_point_risk = FixPointRisk(frame_shape)
         if output_writer is not None:
             self.output_writer = BirdViewWriter(output_writer, self.frame_shape)
 

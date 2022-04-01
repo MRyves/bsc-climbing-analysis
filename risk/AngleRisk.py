@@ -3,6 +3,8 @@ import operator
 
 import numpy as np
 
+from risk import utils
+
 
 def calc_angle(polygon_vertices, right_shifted):
     if len(polygon_vertices) != 3:
@@ -24,7 +26,7 @@ class AngleRisk:
         self.angle_threshold = angle_threshold
 
     def identify(self, person_boxes):
-        box_centers = [self.__middle_of_box(box) for box in person_boxes]
+        box_centers = [utils.middle_of_box(self.frame_shape, box) for box in person_boxes]
         was_right_shifted, polygon_vertices = self.__calc_polygon_vertices(person_boxes)
         angle = calc_angle(polygon_vertices, was_right_shifted)
         return box_centers, polygon_vertices, angle
@@ -40,7 +42,7 @@ class AngleRisk:
         shifted_securer = [person_boxes[0][0], shift_operator(person_boxes[0][1], securer_height), person_boxes[0][2],
                            shift_operator(person_boxes[0][3], securer_height)]
         person_boxes = np.append(person_boxes, [shifted_securer], axis=0)
-        return (shift_operator == operator.add), [self.__middle_of_box(box) for box in person_boxes]
+        return (shift_operator == operator.add), [utils.middle_of_box(self.frame_shape, box) for box in person_boxes]
 
     @staticmethod
     def __get_shift_operator(securer, climber):
@@ -50,16 +52,3 @@ class AngleRisk:
             return operator.add
         else:
             return operator.sub
-
-    def __middle_of_box(self, box):
-        x_mid = (box[1] * self.frame_width + box[3] * self.frame_width) / 2
-        y_mid = (box[0] * self.frame_height + box[2] * self.frame_height) / 2
-        return int(x_mid), int(y_mid)
-
-    @property
-    def frame_width(self):
-        return self.frame_shape[0]
-
-    @property
-    def frame_height(self):
-        return self.frame_shape[1]
