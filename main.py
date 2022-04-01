@@ -37,7 +37,7 @@ if __name__ == "__main__":
         print(f'Starting analysis of frame {video_reader.current_frame}')
         starting_time = time.process_time()
         analyzed_frame, person_boxes = model.analyze(frame)
-        analyzer.analyze(person_boxes)
+        analyzer.analyze(frame[0], person_boxes)
         elapsed_time = time.process_time() - starting_time
         print(f'Analyzed frame number: {str(video_reader.current_frame)} in {str(elapsed_time)}')
         video_writer.write(analyzed_frame)
