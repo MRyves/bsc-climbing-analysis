@@ -28,13 +28,14 @@ class FixPointRisk:
         distance_to_fix_point = -1
         if not self.fix_points_set:
             self.__init_fix_points(frame)
-        if self.securer_height_frame is None:
+        if self.securer_height_frame is None and len(person_boxes) >= 1:
             self.securer_height_frame = (person_boxes[0][2] - person_boxes[0][0]) * self.frame_shape[1]
-        climber_pos = utils.middle_of_box(self.frame_shape, person_boxes[1])
-        closest_fix_point = self.__find_closest_fix_point(climber_pos)
-        if closest_fix_point is not None:
-            distance_to_fix_point = self.__calc_distance(closest_fix_point, climber_pos)
-            print(f'Calculated distance to latest fix point: {distance_to_fix_point} cm')
+        if len(person_boxes) >= 2:
+            climber_pos = utils.middle_of_box(self.frame_shape, person_boxes[1])
+            closest_fix_point = self.__find_closest_fix_point(climber_pos)
+            if closest_fix_point is not None:
+                distance_to_fix_point = self.__calc_distance(closest_fix_point, climber_pos)
+                print(f'Calculated distance to latest fix point: {distance_to_fix_point} cm')
         return self.fix_points_list, distance_to_fix_point
 
     def __find_closest_fix_point(self, climber_pos):
