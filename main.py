@@ -10,7 +10,7 @@ from VideoReader import VideoReader
 from model import Model
 from writer.OutputVideoWriter import OutputVideoWriter
 
-VIDEO_NAME = 'VID_20220309_212145'
+VIDEO_NAME = 'VID_20220309_212533'
 VIDEO_FORMAT = 'mp4'
 VIDEO_SUB_FOLDER = 'second_batch'
 
