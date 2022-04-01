@@ -42,6 +42,12 @@ def add_distance_to_wall(out_frame, securer_wall_distance, point):
     return cv.putText(out_frame, text, point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_WHITE, 2)
 
 
+def add_distance_to_fix_point(out_frame, distance, point):
+    text = f'Vertical distance to fixpoint: {distance:.2f} cm' if distance != -1 else \
+        'Vertical distance to fixpoint: N/A'
+    return cv.putText(out_frame, text, point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_WHITE, 2)
+
+
 class BirdViewWriter:
     def __init__(self, output_writer: OutputVideoWriter, frame_shape: tuple):
         self.output_writer = output_writer
@@ -52,16 +58,18 @@ class BirdViewWriter:
     def __del__(self):
         self.release()
 
-    def write(self, circles, polygon_vertices, fix_points, angle, securer_wall_distance):
+    def write(self, circles, polygon_vertices, fix_points, angle, securer_wall_distance, distance_to_fix_point):
         out_frame = np.copy(self.blank_image)
         for i, circle in enumerate(circles):
             out_frame = draw_circle(out_frame, i, circle)
         for i, fix_point in enumerate(fix_points):
             out_frame = draw_circle(out_frame, i, fix_point, SOLID_RED)
         out_frame = draw_polygon(out_frame, polygon_vertices)
-        out_frame = add_angle(out_frame, angle, (self.frame_shape[0] - 250, self.frame_shape[1] - 100))
+        out_frame = add_distance_to_fix_point(out_frame, distance_to_fix_point,
+                                              (self.frame_shape[0] - 650, self.frame_shape[1] - 150))
+        out_frame = add_angle(out_frame, angle, (self.frame_shape[0] - 650, self.frame_shape[1] - 125))
         out_frame = add_distance_to_wall(out_frame, securer_wall_distance,
-                                         (self.frame_shape[0] - 450, self.frame_shape[1] - 50))
+                                         (self.frame_shape[0] - 650, self.frame_shape[1] - 100))
         self.output_writer.write(out_frame)
 
     def release(self):
