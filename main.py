@@ -11,7 +11,13 @@ from VideoReader import VideoReader
 from model import Model
 from writer.OutputVideoWriter import OutputVideoWriter
 
-def load_image_into_numpy_array(path):
+
+def load_image_into_numpy_array(path: str) -> np.array:
+    """
+    Loads image from given path and puts it into a numpy array.
+    :param path: Path the the image
+    :return: np.array with shape (1, image_px_height, image_px_width, 3)
+    """
     image_data = tf.io.gfile.GFile(path, 'rb').read()
     image = Image.open(BytesIO(image_data))
     (image_width, image_height) = image.size

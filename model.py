@@ -74,13 +74,34 @@ COCO17_HUMAN_POSE_KEYPOINTS = [(0, 1),
 
 
 class Model:
-    def __init__(self, model_name, threshold=.75):
+    """
+    The Model which is used for the person detection in the frames. It uses a Tensorflow model internally which may
+    be configured using the constructor parameters.
+    """
+
+    def __init__(self, model_name: str, threshold=.75):
+        """
+        Constructor
+
+        :param model_name: The name of the model, see list above for all available options.
+        :param threshold: The minimum percentage a possible detection has to reach in order to be used for further
+        analysis
+        """
         self.model_name = model_name
         self.hub_model = None
         self.category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
         self.threshold = threshold
 
-    def analyze(self, frame):
+    def analyze(self, frame: np.array) -> tuple[np.array, np.array]:
+        """
+        Detect person object in given frame.
+
+        :param frame: Image to be analyzed
+        :return: tuple(
+            Copy of the given frame, enriched with detection-boxes. <br>
+            Coordinates of the detected objects in the frame.
+            )
+        """
         results = self.model(frame)
         result = {key: value.numpy() for key, value in results.items()}
         frame_copy = frame.copy()
@@ -108,7 +129,17 @@ class Model:
 
         return frame_copy[0], person_boxes
 
-    def extract_person_boxes(self, result):
+    def extract_person_boxes(self, result: dict) -> tuple[np.array, np.array]:
+        """
+        Since only the 'person' object are of interest in further analysis, this method removes all other objects
+        from the detection result.
+
+        :param result: The detection result to be cleansed
+        :return: tuple (
+            All person boxes from the result. <br>
+            The scores of each person detection
+            )
+        """
         # person class = 1, see label_map_person_only.pbtxt
         person_detections = result['detection_classes'].astype(int) == 1
         person_detections_scores = (np.where(person_detections, result['detection_scores'], 0))
@@ -118,7 +149,7 @@ class Model:
     @property
     def model(self):
         if self.hub_model is None:
-            print("Loading model with name '{}'...".format(self.model_name))
+            print('Loading model with name {}...'.format(self.model_name))
             self.hub_model = hub.load(ALL_MODELS[self.model_name])
-            print("Successfully loaded model with name '{}'".format(self.model_name))
+            print('Successfully loaded model with name {}'.format(self.model_name))
         return self.hub_model

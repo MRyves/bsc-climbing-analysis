@@ -3,7 +3,16 @@ import numpy as np
 
 
 class VideoReader:
-    def __init__(self, video_path, consider_frames_per_second=1):
+    """
+    Used to read a video frame by frame.
+    """
+
+    def __init__(self, video_path: str, consider_frames_per_second=1):
+        """
+        Constructor
+        :param video_path: path the the video
+        :param consider_frames_per_second: frames per second to be read, default is one frame per second
+        """
         self.video_path = video_path
         self.consider_frames_per_second = consider_frames_per_second
         self.__cap = None
@@ -12,7 +21,14 @@ class VideoReader:
         self.current_frame = 1
         self.frames_read = 0
 
-    def next_frame(self):
+    def next_frame(self) -> tuple[bool, np.array]:
+        """
+        Read the next frame
+        :return: tuple(
+            has_frame: boolean if next frame was read successfully, this is false if end of video is reached <br>
+            frame: the frame as a np.array
+        )
+        """
         self.__update_current_frame()
         self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.current_frame)
         has_frame, frame = self.cap.read()
@@ -24,7 +40,10 @@ class VideoReader:
         else:
             return has_frame, None
 
-    def __init_cap(self):
+    def __init_cap(self) -> None:
+        """
+        Initializes the internal video reader if it wasn't initialized yet.
+        """
         if self.__cap is None:
             self.__cap = cv2.VideoCapture(self.video_path)
             self.video_dimensions['height'] = int(self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -53,4 +72,3 @@ class VideoReader:
     def __update_current_frame(self):
         if self.frames_read > 0:
             self.current_frame += self.frame_increment
-
