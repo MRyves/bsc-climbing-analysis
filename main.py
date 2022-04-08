@@ -1,3 +1,4 @@
+import argparse
 import time
 
 import numpy as np
@@ -10,11 +11,6 @@ from VideoReader import VideoReader
 from model import Model
 from writer.OutputVideoWriter import OutputVideoWriter
 
-VIDEO_NAME = 'VID_20220309_212145'
-VIDEO_FORMAT = 'mp4'
-VIDEO_SUB_FOLDER = 'second_batch'
-
-
 def load_image_into_numpy_array(path):
     image_data = tf.io.gfile.GFile(path, 'rb').read()
     image = Image.open(BytesIO(image_data))
@@ -24,13 +20,30 @@ def load_image_into_numpy_array(path):
 
 
 if __name__ == "__main__":
-    video_reader = VideoReader(f'resources/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}.{VIDEO_FORMAT}', 1)
-    bird_view_2 = OutputVideoWriter(f'./results/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}_birdview.avi',
+
+    parser = argparse.ArgumentParser(description='Start a climbing-video analysis.', prog='main.py',
+                                     usage='%(prog)s <path-to-input-video> [options]',
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('input', metavar='Input Video', type=str, help='The path to the input video.')
+    parser.add_argument('-o', '--outputFolder', type=str, dest="output_folder", default='./output',
+                        help='The output folder of the analysis result.')
+    parser.add_argument('-n', '--outputVideoName', type=str, dest='output_video_name', default='analysis-output',
+                        help='The name of the output video. This only changes the filename not the video format. The '
+                             'format will always be .AVI')
+    parser.add_argument('--fps', type=int, dest='fps', default=1,
+                        help='How many frames per second should be analyzed of the input video.')
+    parser.add_argument('--model', type=str, dest='model', default='Faster R-CNN ResNet152 V1 1024x1024',
+                        help='Which TF model should be used to detect objects in the frames. See "model.py" for a '
+                             'list of all available models.')
+    args = parser.parse_args()
+
+    video_reader = VideoReader(args.input, args.fps)
+    bird_view_2 = OutputVideoWriter(f'{args.output_folder}/{args.output_video_name}_birdview.avi',
                                     video_reader.consider_frames_per_second, video_reader.video_shape)
     analyzer = RiskAnalysis(video_reader.video_shape, bird_view_2)
-    video_writer = OutputVideoWriter(f'./results/videos/{VIDEO_SUB_FOLDER}/{VIDEO_NAME}.avi',
+    video_writer = OutputVideoWriter(f'{args.output_folder}/{args.output_video_name}.avi',
                                      video_reader.consider_frames_per_second, video_reader.video_shape)
-    model = Model(model_name='Faster R-CNN ResNet152 V1 1024x1024')
+    model = Model(model_name=args.model)
 
     has_frame, frame = video_reader.next_frame()
     while has_frame:
