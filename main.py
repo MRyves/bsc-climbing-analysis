@@ -41,12 +41,16 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, dest='model', default='Faster R-CNN ResNet152 V1 1024x1024',
                         help='Which TF model should be used to detect objects in the frames. See "model.py" for a '
                              'list of all available models.')
+    parser.add_argument('--securerHeight', '-s', type=int, dest='securer_height', default=170,
+                        help='The actual height of the securer in centimeters')
+    parser.add_argument('--distanceWall', '-w', type=int, dest='distance_to_wall', default=50,
+                        help='The actual distance of the securer to the climbing wall in the first frame')
     args = parser.parse_args()
 
     video_reader = VideoReader(args.input, args.fps)
     bird_view_2 = OutputVideoWriter(f'{args.output_folder}/{args.output_video_name}_birdview.avi',
                                     video_reader.consider_frames_per_second, video_reader.video_shape)
-    analyzer = RiskAnalysis(video_reader.video_shape, bird_view_2)
+    analyzer = RiskAnalysis(video_reader.video_shape, bird_view_2, args.distance_to_wall, args.securer_height)
     video_writer = OutputVideoWriter(f'{args.output_folder}/{args.output_video_name}.avi',
                                      video_reader.consider_frames_per_second, video_reader.video_shape)
     model = Model(model_name=args.model)

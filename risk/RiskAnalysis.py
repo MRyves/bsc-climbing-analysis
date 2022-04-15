@@ -15,12 +15,12 @@ def order_boxes(person_boxes):
 
 
 class RiskAnalysis:
-    def __init__(self, frame_shape, output_writer=None):
+    def __init__(self, frame_shape, output_writer=None, distance_to_wall=50, securer_height=170):
         self.output_writer = None
         self.frame_shape = frame_shape
         self.angle_risk = AngleRisk(frame_shape)
-        self.wall_distance_risk = WallDistanceRisk(self.frame_shape[1])
-        self.fix_point_risk = FixPointRisk(frame_shape)
+        self.wall_distance_risk = WallDistanceRisk(self.frame_shape[1], distance_to_wall)
+        self.fix_point_risk = FixPointRisk(frame_shape, securer_height)
         if output_writer is not None:
             self.output_writer = BirdViewWriter(output_writer, self.frame_shape)
 
