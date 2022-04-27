@@ -1,5 +1,8 @@
+from typing import Tuple, List
+
 import cv2 as cv
 import numpy as np
+from numpy.typing import NDArray
 
 from writer.OutputVideoWriter import OutputVideoWriter
 
@@ -23,7 +26,7 @@ def draw_circle(out_frame, circle_number, point, color=SOLID_BLUE):
     )
 
 
-def draw_polygon(out_frame, polygon_vertices):
+def draw_polygon(out_frame: NDArray, polygon_vertices: List):
     if len(polygon_vertices) == 3:
         polygon_vertices = np.array(polygon_vertices, np.int32)
         polygon_vertices = polygon_vertices.reshape((-1, 1, 2))
@@ -49,7 +52,11 @@ def add_distance_to_fix_point(out_frame, distance, point):
 
 
 class BirdViewWriter:
-    def __init__(self, output_writer: OutputVideoWriter, frame_shape: tuple):
+    """
+    Provides the interface to write a "BirdView"-Output video.
+    """
+
+    def __init__(self, output_writer: OutputVideoWriter, frame_shape: Tuple[int, int]):
         self.output_writer = output_writer
         self.frame_shape = frame_shape
         self.blank_image = np.zeros((frame_shape[1], frame_shape[0], 3), np.uint8)
@@ -58,7 +65,18 @@ class BirdViewWriter:
     def __del__(self):
         self.release()
 
-    def write(self, circles, polygon_vertices, fix_points, angle, securer_wall_distance, distance_to_fix_point):
+    def write(self, circles: List, polygon_vertices: List, fix_points: List, angle: float, securer_wall_distance: float,
+              distance_to_fix_point: float) -> None:
+        """
+        Write the next birdview-frame with the information given:
+        :param circles: The coordinates of the detected person objects in the analyzed frame
+        :param polygon_vertices: The vertices of the polygon used to measure the horizontal distance of the securer
+        and the climber
+        :param fix_points: The coordinates of the fix points marked in the first frame
+        :param angle: The angle of the corner of the drawn polygon to measure horizontal distance
+        :param securer_wall_distance: The calculated distance of the securer to the climbing wall
+        :param distance_to_fix_point: The calculated horizontal distance to the latest fix point
+        """
         out_frame = np.copy(self.blank_image)
         for i, circle in enumerate(circles):
             out_frame = draw_circle(out_frame, i, circle)

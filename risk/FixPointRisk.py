@@ -49,7 +49,7 @@ class FixPointRisk:
         # ask user to mark fix points in frame
         self.init_frame, self.resize_factor = resize_with_aspect_ratio(frame, 1000)
         cv.namedWindow(self.window_name, cv.WINDOW_AUTOSIZE)
-        cv.setMouseCallback(self.window_name, self.get_fix_points)
+        cv.setMouseCallback(self.window_name, self.__mark_fixpoint)
         while not self.fix_points_set:
             cv.imshow(self.window_name, self.init_frame)
             cv.waitKey(100)
@@ -57,7 +57,7 @@ class FixPointRisk:
         self.fix_points = np.array(self.fix_points_list)
         print(f'Successfully marked {len(self.fix_points_list)} fix points')
 
-    def get_fix_points(self, event, x, y, flags, param):
+    def __mark_fixpoint(self, event, x, y, flags, param):
         if event == cv.EVENT_LBUTTONDOWN:
             scaled_x = int(x / self.resize_factor)
             scaled_y = int(y / self.resize_factor)

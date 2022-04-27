@@ -1,7 +1,9 @@
 import math
 import operator
+from typing import Tuple
 
 import numpy as np
+from numpy.typing import NDArray
 
 from risk import utils
 
@@ -21,7 +23,7 @@ def calc_angle(polygon_vertices, right_shifted):
 
 
 class AngleRisk:
-    def __init__(self, frame_shape, angle_threshold=90):
+    def __init__(self, frame_shape: Tuple[int, int], angle_threshold: int = 90):
         self.frame_shape = frame_shape
         self.angle_threshold = angle_threshold
 
@@ -31,7 +33,7 @@ class AngleRisk:
         angle = calc_angle(polygon_vertices, was_right_shifted)
         return box_centers, polygon_vertices, angle
 
-    def __calc_polygon_vertices(self, person_boxes: np.ndarray):
+    def __calc_polygon_vertices(self, person_boxes: NDArray):
         if len(person_boxes) != 2:
             # As of right now, there is no way to draw a polygon if there are more persons detected than two
             # Therefore skipping the calculation in that case
@@ -45,7 +47,7 @@ class AngleRisk:
         return (shift_operator == operator.add), [utils.middle_of_box(self.frame_shape, box) for box in person_boxes]
 
     @staticmethod
-    def __get_shift_operator(securer, climber):
+    def __get_shift_operator(securer: NDArray, climber: NDArray) -> operator:
         xmin_securer = securer[1]
         xmin_climber = climber[1]
         if xmin_securer <= xmin_climber:

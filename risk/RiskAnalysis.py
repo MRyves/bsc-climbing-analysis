@@ -1,4 +1,5 @@
 import math
+from typing import Tuple
 
 import numpy as np
 
@@ -6,6 +7,7 @@ from risk.AngleRisk import AngleRisk
 from risk.FixPointRisk import FixPointRisk
 from risk.WallDistanceRisk import WallDistanceRisk
 from writer.BirdViewWriter import BirdViewWriter
+from writer.OutputVideoWriter import OutputVideoWriter
 
 
 def order_boxes(person_boxes):
@@ -15,7 +17,8 @@ def order_boxes(person_boxes):
 
 
 class RiskAnalysis:
-    def __init__(self, frame_shape, output_writer=None, distance_to_wall=50, securer_height=170):
+    def __init__(self, frame_shape: Tuple[int, int], output_writer: OutputVideoWriter = None,
+                 distance_to_wall: int = 50, securer_height: int = 170):
         self.output_writer = None
         self.frame_shape = frame_shape
         self.angle_risk = AngleRisk(frame_shape)
@@ -27,7 +30,7 @@ class RiskAnalysis:
     def __del__(self):
         self.finished_analysis()
 
-    def analyze(self, frame, person_boxes):
+    def analyze(self, frame, person_boxes) -> None:
         print(f'Risk analyzing a total of {len(person_boxes)} detection boxes...')
         person_boxes = order_boxes(person_boxes)
         box_centers, polygon_vertices, angle = self.angle_risk.identify(person_boxes)

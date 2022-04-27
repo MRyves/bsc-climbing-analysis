@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from numpy.typing import NDArray
 
 
 class VideoReader:
@@ -21,12 +22,12 @@ class VideoReader:
         self.current_frame = 1
         self.frames_read = 0
 
-    def next_frame(self) -> tuple[bool, np.array]:
+    def next_frame(self) -> tuple[bool, NDArray]:
         """
         Read the next frame
         :return: tuple(
             has_frame: boolean if next frame was read successfully, this is false if end of video is reached <br>
-            frame: the frame as a np.array
+            frame: the frame as a NDArray
         )
         """
         self.__update_current_frame()

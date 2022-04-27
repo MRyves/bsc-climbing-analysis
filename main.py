@@ -4,6 +4,7 @@ import time
 import numpy as np
 import tensorflow as tf
 from PIL import Image
+from numpy.typing import NDArray
 from six import BytesIO
 
 from risk.RiskAnalysis import RiskAnalysis
@@ -12,11 +13,11 @@ from model import Model
 from writer.OutputVideoWriter import OutputVideoWriter
 
 
-def load_image_into_numpy_array(path: str) -> np.array:
+def load_image_into_numpy_array(path: str) -> NDArray:
     """
     Loads image from given path and puts it into a numpy array.
     :param path: Path the the image
-    :return: np.array with shape (1, image_px_height, image_px_width, 3)
+    :return: NDArray with shape (1, image_px_height, image_px_width, 3)
     """
     image_data = tf.io.gfile.GFile(path, 'rb').read()
     image = Image.open(BytesIO(image_data))
