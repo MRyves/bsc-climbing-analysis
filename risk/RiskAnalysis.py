@@ -1,7 +1,6 @@
-import math
-from typing import Tuple
+from typing import Tuple, List
 
-import numpy as np
+from numpy.typing import NDArray
 
 from risk.AngleRisk import AngleRisk
 from risk.FixPointRisk import FixPointRisk
@@ -10,15 +9,32 @@ from writer.BirdViewWriter import BirdViewWriter
 from writer.OutputVideoWriter import OutputVideoWriter
 
 
-def order_boxes(person_boxes):
+def order_boxes(person_boxes: NDArray):
+    """
+    Orders the given numpy array of person detection boxes by the y-axis value (then by x-axis value)
+    :param person_boxes: The detection boxes to be orderd
+    :return: The ordered array of detection boxes
+    """
     person_boxes = person_boxes[person_boxes[:, 2].argsort()]
     person_boxes = person_boxes[person_boxes[:, 1].argsort(kind='merge')]
     return person_boxes
 
 
 class RiskAnalysis:
+    """
+    Class implementing the risk analysis part of the climbing situation
+    """
+
     def __init__(self, frame_shape: Tuple[int, int], output_writer: OutputVideoWriter = None,
                  distance_to_wall: int = 50, securer_height: int = 170):
+        """
+        Constructor
+        :param frame_shape: the shape of the frame in pixels (width, height)
+        :param output_writer: If given an output video of the analysis is written using the BirdViewWriter
+        :param distance_to_wall: The distance to the wall in the first frame. This value is used to determine the
+        risk the securer being to far away from the climbing wall. Unit: centimeters
+        :param securer_height: The real life height of the securer in centimeters
+        """
         self.output_writer = None
         self.frame_shape = frame_shape
         self.angle_risk = AngleRisk(frame_shape)
@@ -27,10 +43,19 @@ class RiskAnalysis:
         if output_writer is not None:
             self.output_writer = BirdViewWriter(output_writer, self.frame_shape)
 
-    def __del__(self):
+    def __del__(self) -> None:
+        """
+        Deconstruct: Finishes the analysis
+        """
         self.finished_analysis()
 
-    def analyze(self, frame, person_boxes) -> None:
+    def analyze(self, frame: NDArray, person_boxes: NDArray) -> None:
+        """
+        Performs risk analysis on the given frame and logs the result on the console. It also writes to the output
+        video writer if one is given.
+        :param frame: The frame to be analyzed
+        :param person_boxes: The bounding boxes of the detected person objects in the given frame
+        """
         print(f'Risk analyzing a total of {len(person_boxes)} detection boxes...')
         person_boxes = order_boxes(person_boxes)
         box_centers, polygon_vertices, angle = self.angle_risk.identify(person_boxes)
@@ -41,14 +66,30 @@ class RiskAnalysis:
         self.write(box_centers, polygon_vertices, fix_points, angle, securer_wall_distance, distance_to_fix_point)
 
     def finished_analysis(self):
+        """
+        Release the internal output video writer if one was given in the constructor.
+        """
         if self.has_output_writer:
             self.output_writer.release()
 
-    def write(self, circles, polygon_edges, fix_points, angle, securer_wall_distance, distance_to_fix_point):
+    def write(self, person_positions: List, polygon_edges: List, fix_points: List, angle: float,
+              securer_wall_distance: float, distance_to_fix_point: float) -> None:
+        """
+        Writes the analysis result to the output video writer
+        :param person_positions: The position of the detected person in the frame
+        :param polygon_edges: The edges for the triangle used to calculate the horizontal distance of the persons
+        :param fix_points: The positions of the fix points marked by the user in the first frame
+        :param angle: The angle in question for the horizontal distance measure
+        :param securer_wall_distance: The calculated distance of the securer to the wall
+        :param distance_to_fix_point: The calculated distance to the last passed fix point
+        """
         if self.has_output_writer:
-            self.output_writer.write(circles, polygon_edges, fix_points, angle, securer_wall_distance,
+            self.output_writer.write(person_positions, polygon_edges, fix_points, angle, securer_wall_distance,
                                      distance_to_fix_point)
 
     @property
-    def has_output_writer(self):
+    def has_output_writer(self) -> bool:
+        """
+        :return: true if an internal output video writer is given
+        """
         return self.output_writer is not None

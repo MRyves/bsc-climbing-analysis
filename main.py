@@ -16,7 +16,7 @@ from writer.OutputVideoWriter import OutputVideoWriter
 def load_image_into_numpy_array(path: str) -> NDArray:
     """
     Loads image from given path and puts it into a numpy array.
-    :param path: Path the the image
+    :param path: Path to the image
     :return: NDArray with shape (1, image_px_height, image_px_width, 3)
     """
     image_data = tf.io.gfile.GFile(path, 'rb').read()

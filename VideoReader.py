@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import cv2
 import numpy as np
 from numpy.typing import NDArray
@@ -57,19 +59,32 @@ class VideoReader:
 
     @property
     def cap(self):
+        """
+        Initialize the video capturer if needed
+        :return: The video capturer instance
+        """
         self.__init_cap()
         return self.__cap
 
     @property
-    def video_shape(self):
+    def video_shape(self) -> Tuple[int, int]:
+        """
+        :return: The shape of the video in pixels (width, height)
+        """
         self.__init_cap()
         return self.video_dimensions['width'], self.video_dimensions['height']
 
     @property
-    def video_fps(self):
+    def video_fps(self) -> int:
+        """
+        :return: The fps of the video which is read
+        """
         self.__init_cap()
         return self.video_dimensions['fps']
 
-    def __update_current_frame(self):
+    def __update_current_frame(self) -> None:
+        """
+        Updates the current_frame by incrementing it with the calculated frame_increment
+        """
         if self.frames_read > 0:
             self.current_frame += self.frame_increment

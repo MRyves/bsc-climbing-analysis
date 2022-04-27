@@ -65,11 +65,11 @@ class BirdViewWriter:
     def __del__(self):
         self.release()
 
-    def write(self, circles: List, polygon_vertices: List, fix_points: List, angle: float, securer_wall_distance: float,
+    def write(self, person_positions: List, polygon_vertices: List, fix_points: List, angle: float, securer_wall_distance: float,
               distance_to_fix_point: float) -> None:
         """
         Write the next birdview-frame with the information given:
-        :param circles: The coordinates of the detected person objects in the analyzed frame
+        :param person_positions: The coordinates of the detected person objects in the analyzed frame
         :param polygon_vertices: The vertices of the polygon used to measure the horizontal distance of the securer
         and the climber
         :param fix_points: The coordinates of the fix points marked in the first frame
@@ -78,7 +78,7 @@ class BirdViewWriter:
         :param distance_to_fix_point: The calculated horizontal distance to the latest fix point
         """
         out_frame = np.copy(self.blank_image)
-        for i, circle in enumerate(circles):
+        for i, circle in enumerate(person_positions):
             out_frame = draw_circle(out_frame, i, circle)
         for i, fix_point in enumerate(fix_points):
             out_frame = draw_circle(out_frame, i, fix_point, SOLID_RED)
@@ -90,5 +90,8 @@ class BirdViewWriter:
                                          (self.frame_shape[0] - 650, self.frame_shape[1] - 100))
         self.output_writer.write(out_frame)
 
-    def release(self):
+    def release(self) -> None:
+        """
+        Release the internal output video writer
+        """
         self.output_writer.release()
