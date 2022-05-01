@@ -46,12 +46,15 @@ if __name__ == "__main__":
                         help='The actual height of the securer in centimeters')
     parser.add_argument('--distanceWall', '-w', type=int, dest='distance_to_wall', default=50,
                         help='The actual distance of the securer to the climbing wall in the first frame')
+    parser.add_argument('--distanceCamera', '-c', type=int, dest='distance_camera_wall', default=500,
+                        help='The actual distance of the camera to the climbing wall')
     args = parser.parse_args()
 
     video_reader = VideoReader(args.input, args.fps)
-    bird_view_2 = OutputVideoWriter(f'{args.output_folder}/{args.output_video_name}_birdview.avi',
-                                    video_reader.consider_frames_per_second, video_reader.video_shape)
-    analyzer = RiskAnalysis(video_reader.video_shape, bird_view_2, args.distance_to_wall, args.securer_height)
+    bird_view = OutputVideoWriter(f'{args.output_folder}/{args.output_video_name}_birdview.avi',
+                                  video_reader.consider_frames_per_second, video_reader.video_shape)
+    analyzer = RiskAnalysis(video_reader.video_shape, args.distance_to_wall, args.securer_height,
+                            args.distance_camera_wall, bird_view)
     video_writer = OutputVideoWriter(f'{args.output_folder}/{args.output_video_name}.avi',
                                      video_reader.consider_frames_per_second, video_reader.video_shape)
     model = Model(model_name=args.model)

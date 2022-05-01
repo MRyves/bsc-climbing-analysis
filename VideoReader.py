@@ -10,10 +10,10 @@ class VideoReader:
     Used to read a video frame by frame.
     """
 
-    def __init__(self, video_path: str, consider_frames_per_second=1):
+    def __init__(self, video_path: str, consider_frames_per_second):
         """
         Constructor
-        :param video_path: path the the video
+        :param video_path: path to the video
         :param consider_frames_per_second: frames per second to be read, default is one frame per second
         """
         self.video_path = video_path

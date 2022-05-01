@@ -25,20 +25,21 @@ class RiskAnalysis:
     Class implementing the risk analysis part of the climbing situation
     """
 
-    def __init__(self, frame_shape: Tuple[int, int], output_writer: OutputVideoWriter = None,
-                 distance_to_wall: int = 50, securer_height: int = 170):
+    def __init__(self, frame_shape: Tuple[int, int], distance_to_wall: int, securer_height: int,
+                 distance_camera_wall: int, output_writer: OutputVideoWriter = None):
         """
         Constructor
         :param frame_shape: the shape of the frame in pixels (width, height)
-        :param output_writer: If given an output video of the analysis is written using the BirdViewWriter
         :param distance_to_wall: The distance to the wall in the first frame. This value is used to determine the
-        risk the securer being to far away from the climbing wall. Unit: centimeters
+        risk the securer being too far away from the climbing wall. Unit: centimeters
         :param securer_height: The real life height of the securer in centimeters
+        :param distance_camera_wall: The real life distance of the camera to the climbing wall. Unit: centimeters
+        :param output_writer: If given an output video of the analysis is written using the BirdViewWriter
         """
         self.output_writer = None
         self.frame_shape = frame_shape
         self.angle_risk = AngleRisk(frame_shape)
-        self.wall_distance_risk = WallDistanceRisk(distance_to_wall, securer_height)
+        self.wall_distance_risk = WallDistanceRisk(distance_to_wall, securer_height, distance_camera_wall)
         self.fix_point_risk = FixPointRisk(frame_shape, securer_height)
         if output_writer is not None:
             self.output_writer = BirdViewWriter(output_writer, self.frame_shape)
