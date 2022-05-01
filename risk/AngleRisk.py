@@ -23,9 +23,8 @@ def calc_angle(polygon_vertices, right_shifted):
 
 
 class AngleRisk:
-    def __init__(self, frame_shape: Tuple[int, int], angle_threshold: int = 90):
+    def __init__(self, frame_shape: Tuple[int, int]):
         self.frame_shape = frame_shape
-        self.angle_threshold = angle_threshold
 
     def identify(self, person_boxes):
         box_centers = [utils.middle_of_box(self.frame_shape, box) for box in person_boxes]

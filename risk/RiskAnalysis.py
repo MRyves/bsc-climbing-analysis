@@ -38,7 +38,7 @@ class RiskAnalysis:
         self.output_writer = None
         self.frame_shape = frame_shape
         self.angle_risk = AngleRisk(frame_shape)
-        self.wall_distance_risk = WallDistanceRisk(self.frame_shape[1], distance_to_wall)
+        self.wall_distance_risk = WallDistanceRisk(distance_to_wall, securer_height)
         self.fix_point_risk = FixPointRisk(frame_shape, securer_height)
         if output_writer is not None:
             self.output_writer = BirdViewWriter(output_writer, self.frame_shape)
@@ -57,7 +57,7 @@ class RiskAnalysis:
         :param person_boxes: The bounding boxes of the detected person objects in the given frame
         """
         print(f'Risk analyzing a total of {len(person_boxes)} detection boxes...')
-        person_boxes = order_boxes(person_boxes)
+        person_boxes_ordered = order_boxes(person_boxes)
         box_centers, polygon_vertices, angle = self.angle_risk.identify(person_boxes)
         securer_wall_distance = self.wall_distance_risk.calc_distance(person_boxes)
         fix_points, distance_to_fix_point = self.fix_point_risk.analyze(frame, person_boxes)
