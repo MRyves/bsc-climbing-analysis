@@ -10,3 +10,10 @@ Follow these steps to install the Project locally:
 * `source ./py_env/Scripts/activate`
 #### 3. Install dependencies
 `pip install -e .`
+
+## How to use the prototype
+Follow the instructions seen when the prototype is called with the `-h` argument:
+```
+python main.py -h
+```
+For further information see the thesis document in this repo.
