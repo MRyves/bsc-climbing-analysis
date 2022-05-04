@@ -1,6 +1,6 @@
 from typing import Tuple
 
-import cv2
+import cv2 as cv
 import numpy as np
 from numpy.typing import NDArray
 
@@ -10,7 +10,7 @@ class VideoReader:
     Used to read a video frame by frame.
     """
 
-    def __init__(self, video_path: str, consider_frames_per_second):
+    def __init__(self, video_path: str, consider_frames_per_second: int):
         """
         Constructor
         :param video_path: path to the video
@@ -33,7 +33,7 @@ class VideoReader:
         )
         """
         self.__update_current_frame()
-        self.cap.set(cv2.CAP_PROP_POS_FRAMES, self.current_frame)
+        self.cap.set(cv.CAP_PROP_POS_FRAMES, self.current_frame)
         has_frame, frame = self.cap.read()
         if has_frame:
             self.frames_read += 1
@@ -48,10 +48,10 @@ class VideoReader:
         Initializes the internal video reader if it wasn't initialized yet.
         """
         if self.__cap is None:
-            self.__cap = cv2.VideoCapture(self.video_path)
-            self.video_dimensions['height'] = int(self.__cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-            self.video_dimensions['width'] = int(self.__cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-            self.video_dimensions['fps'] = int(self.__cap.get(cv2.CAP_PROP_FPS))
+            self.__cap = cv.VideoCapture(self.video_path)
+            self.video_dimensions['height'] = int(self.__cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+            self.video_dimensions['width'] = int(self.__cap.get(cv.CAP_PROP_FRAME_WIDTH))
+            self.video_dimensions['fps'] = int(self.__cap.get(cv.CAP_PROP_FPS))
             self.frame_increment = int(self.video_dimensions['fps'] / self.consider_frames_per_second)
             print(
                 f'Initialized video capturer for video "{self.video_path}" \n with fps: '

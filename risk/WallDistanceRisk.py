@@ -1,5 +1,7 @@
 from typing import List
 
+from numpy.typing import NDArray
+
 
 class WallDistanceRisk:
     """
@@ -22,21 +24,21 @@ class WallDistanceRisk:
         self.physical_securer_height = physical_securer_height
         self.focal_length = None
 
-    def calc_distance(self, person_boxes: List) -> float:
+    def calc_distance(self, person_boxes: NDArray) -> float:
         """
         Calculate the distance using the initial values provided to the constructor.
         :param person_boxes: The detected person objects, it is assumed that the securer is always the last item in
         this list
         :return: The calculated distance in Centimeters
         """
-        if len(person_boxes) == 0:
+        if len(person_boxes) != 2:
             return -1
         securer_height = person_boxes[-1][2] - person_boxes[-1][0]
         if self.focal_length is None:
             self.focal_length = self.calc_focal_length(securer_height)
             return self.securer_distance
         securer_camera_distance_new = (self.physical_securer_height * self.focal_length) / securer_height
-        return self.camera_distance - securer_camera_distance_new
+        return max(self.camera_distance - securer_camera_distance_new, 0)
 
     def calc_focal_length(self, securer_height: float) -> float:
         """

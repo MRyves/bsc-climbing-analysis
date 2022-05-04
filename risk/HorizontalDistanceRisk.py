@@ -1,6 +1,6 @@
 import math
 import operator
-from typing import Tuple
+from typing import Tuple, List
 
 import numpy as np
 from numpy.typing import NDArray
@@ -22,17 +22,19 @@ def calc_angle(polygon_vertices, right_shifted):
         return abs(ang)
 
 
-class AngleRisk:
-    def __init__(self, frame_shape: Tuple[int, int]):
+class HorizontalDistanceRisk:
+    def __init__(self, frame_shape: Tuple[int, int], securer_height: int):
         self.frame_shape = frame_shape
+        self.securer_height = securer_height
 
-    def identify(self, person_boxes):
+    def calc_distance(self, person_boxes: NDArray) -> Tuple[NDArray, NDArray, float, float]:
         box_centers = [utils.middle_of_box(self.frame_shape, box) for box in person_boxes]
         was_right_shifted, polygon_vertices = self.__calc_polygon_vertices(person_boxes)
         angle = calc_angle(polygon_vertices, was_right_shifted)
-        return box_centers, polygon_vertices, angle
+        distance = (angle / 90) * self.securer_height if angle != -1 else -1
+        return box_centers, polygon_vertices, angle, distance
 
-    def __calc_polygon_vertices(self, person_boxes: NDArray):
+    def __calc_polygon_vertices(self, person_boxes: NDArray) -> Tuple[bool, NDArray]:
         if len(person_boxes) != 2:
             # As of right now, there is no way to draw a polygon if there are more persons detected than two
             # Therefore skipping the calculation in that case

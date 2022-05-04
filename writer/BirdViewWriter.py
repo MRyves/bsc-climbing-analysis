@@ -38,6 +38,10 @@ def add_angle(out_frame, angle, point):
     text = f'Angle: {angle:.2f} Deg' if angle != -1 else "Angle: N/A"
     return cv.putText(out_frame, text, point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_WHITE, 2)
 
+def add_horizontal_distance(out_frame: NDArray, distance: float, point: Tuple[int, int]):
+    text = f'Estimated horizontal distance: {distance:.2f} cm' if distance != -1 else \
+        "Estimated horizontal distance: N/A"
+    return cv.putText(out_frame, text, point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_WHITE, 2)
 
 def add_distance_to_wall(out_frame, securer_wall_distance, point):
     text = f'Estimated distance to wall: {securer_wall_distance:.2f} cm' if securer_wall_distance != -1 else \
@@ -65,7 +69,7 @@ class BirdViewWriter:
     def __del__(self):
         self.release()
 
-    def write(self, person_positions: List, polygon_vertices: List, fix_points: List, angle: float, securer_wall_distance: float,
+    def write(self, person_positions: List, polygon_vertices: List, fix_points: List, angle: float, distance: float, securer_wall_distance: float,
               distance_to_fix_point: float) -> None:
         """
         Write the next birdview-frame with the information given:
@@ -84,8 +88,9 @@ class BirdViewWriter:
             out_frame = draw_circle(out_frame, i, fix_point, SOLID_RED)
         out_frame = draw_polygon(out_frame, polygon_vertices)
         out_frame = add_distance_to_fix_point(out_frame, distance_to_fix_point,
-                                              (self.frame_shape[0] - 650, self.frame_shape[1] - 150))
-        out_frame = add_angle(out_frame, angle, (self.frame_shape[0] - 650, self.frame_shape[1] - 125))
+                                              (self.frame_shape[0] - 650, self.frame_shape[1] - 175))
+        out_frame = add_angle(out_frame, angle, (self.frame_shape[0] - 650, self.frame_shape[1] - 150))
+        out_frame = add_horizontal_distance(out_frame, distance, (self.frame_shape[0] - 650, self.frame_shape[1] - 125))
         out_frame = add_distance_to_wall(out_frame, securer_wall_distance,
                                          (self.frame_shape[0] - 650, self.frame_shape[1] - 100))
         self.output_writer.write(out_frame)

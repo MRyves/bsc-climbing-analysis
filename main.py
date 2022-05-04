@@ -63,6 +63,7 @@ if __name__ == "__main__":
     while has_frame:
         print(f'Starting analysis of frame {video_reader.current_frame}')
         starting_time = time.process_time()
+        # Todo: what type is person_boxes???
         analyzed_frame, person_boxes = model.analyze(frame)
         analyzer.analyze(frame[0], person_boxes)
         elapsed_time = time.process_time() - starting_time

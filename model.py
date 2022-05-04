@@ -80,7 +80,7 @@ class Model:
     be configured using the constructor parameters.
     """
 
-    def __init__(self, model_name: str, threshold=.75):
+    def __init__(self, model_name: str, threshold=.50):
         """
         Constructor
 
@@ -97,7 +97,7 @@ class Model:
         """
         Detect person object in given frame.
 
-        :param frame: Image to be analyzed
+        :param: frame Image to be analyzed
         :return: tuple(
             Copy of the given frame, enriched with detection-boxes. <br>
             Coordinates of the detected objects in the frame.
