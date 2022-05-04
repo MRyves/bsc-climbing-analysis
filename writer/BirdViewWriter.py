@@ -26,22 +26,11 @@ def draw_circle(out_frame, circle_number, point, color=SOLID_BLUE):
     )
 
 
-def draw_polygon(out_frame: NDArray, polygon_vertices: List):
-    if len(polygon_vertices) == 3:
-        polygon_vertices = np.array(polygon_vertices, np.int32)
-        polygon_vertices = polygon_vertices.reshape((-1, 1, 2))
-        out_frame = cv.polylines(out_frame, [polygon_vertices], True, color=SOLID_TURQUOISE, thickness=2)
-    return out_frame
-
-
-def add_angle(out_frame, angle, point):
-    text = f'Angle: {angle:.2f} Deg' if angle != -1 else "Angle: N/A"
-    return cv.putText(out_frame, text, point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_WHITE, 2)
-
 def add_horizontal_distance(out_frame: NDArray, distance: float, point: Tuple[int, int]):
     text = f'Estimated horizontal distance: {distance:.2f} cm' if distance != -1 else \
         "Estimated horizontal distance: N/A"
     return cv.putText(out_frame, text, point, cv.FONT_HERSHEY_SIMPLEX, 0.7, SOLID_WHITE, 2)
+
 
 def add_distance_to_wall(out_frame, securer_wall_distance, point):
     text = f'Estimated distance to wall: {securer_wall_distance:.2f} cm' if securer_wall_distance != -1 else \
@@ -69,15 +58,13 @@ class BirdViewWriter:
     def __del__(self):
         self.release()
 
-    def write(self, person_positions: List, polygon_vertices: List, fix_points: List, angle: float, distance: float, securer_wall_distance: float,
+    def write(self, person_positions: List, fix_points: List, distance: float, securer_wall_distance: float,
               distance_to_fix_point: float) -> None:
         """
         Write the next birdview-frame with the information given:
         :param person_positions: The coordinates of the detected person objects in the analyzed frame
-        :param polygon_vertices: The vertices of the polygon used to measure the horizontal distance of the securer
         and the climber
         :param fix_points: The coordinates of the fix points marked in the first frame
-        :param angle: The angle of the corner of the drawn polygon to measure horizontal distance
         :param securer_wall_distance: The calculated distance of the securer to the climbing wall
         :param distance_to_fix_point: The calculated horizontal distance to the latest fix point
         """
@@ -86,10 +73,8 @@ class BirdViewWriter:
             out_frame = draw_circle(out_frame, i, circle)
         for i, fix_point in enumerate(fix_points):
             out_frame = draw_circle(out_frame, i, fix_point, SOLID_RED)
-        out_frame = draw_polygon(out_frame, polygon_vertices)
         out_frame = add_distance_to_fix_point(out_frame, distance_to_fix_point,
-                                              (self.frame_shape[0] - 650, self.frame_shape[1] - 175))
-        out_frame = add_angle(out_frame, angle, (self.frame_shape[0] - 650, self.frame_shape[1] - 150))
+                                              (self.frame_shape[0] - 650, self.frame_shape[1] - 150))
         out_frame = add_horizontal_distance(out_frame, distance, (self.frame_shape[0] - 650, self.frame_shape[1] - 125))
         out_frame = add_distance_to_wall(out_frame, securer_wall_distance,
                                          (self.frame_shape[0] - 650, self.frame_shape[1] - 100))

@@ -91,7 +91,7 @@ class FixPointRisk:
             cv.imshow(self.window_name, self.init_frame)
             cv.waitKey(100)
         cv.destroyWindow(self.window_name)
-        self.fix_points = np.array(self.fix_points_list)
+        self.fix_points = np.reshape(np.array(self.fix_points_list), (-1, 2))
         print(f'Successfully marked {len(self.fix_points_list)} fix points')
 
     def __mark_fixpoint(self, event, x, y, flags, param) -> None:

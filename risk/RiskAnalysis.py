@@ -60,13 +60,13 @@ class RiskAnalysis:
         """
         print(f'Risk analyzing a total of {len(person_boxes)} detection boxes...')
         person_boxes_ordered = order_boxes(person_boxes)
-        box_centers, polygon_vertices, angle, distance = self.horizontal_distance_risk.calc_distance(
+        box_centers, distance = self.horizontal_distance_risk.calc_distance(
             person_boxes_ordered)
         securer_wall_distance = self.wall_distance_risk.calc_distance(person_boxes_ordered)
         fix_points, distance_to_fix_point = self.fix_point_risk.analyze(frame, person_boxes_ordered)
-        print(f'Calculated angle: {angle} degrees -> Horizontal distance: {distance}')
+        print(f'Calculated horizontal distance: {distance}')
         print(f'Estimated distance to wall: {securer_wall_distance} cm')
-        self.write(box_centers, polygon_vertices, fix_points, angle, distance, securer_wall_distance,
+        self.write(box_centers, fix_points, distance, securer_wall_distance,
                    distance_to_fix_point)
 
     def finished_analysis(self):
@@ -76,20 +76,18 @@ class RiskAnalysis:
         if self.has_output_writer:
             self.output_writer.release()
 
-    def write(self, person_positions: List, polygon_edges: List, fix_points: List, angle: float, distance: float,
+    def write(self, person_positions: List, fix_points: List, distance: float,
               securer_wall_distance: float, distance_to_fix_point: float) -> None:
         """
         Writes the analysis result to the output video writer
         :param person_positions: The position of the detected person in the frame
-        :param polygon_edges: The edges for the triangle used to calculate the horizontal distance of the persons
         :param fix_points: The positions of the fix points marked by the user in the first frame
-        :param angle: The angle in question for the horizontal distance measure
         :param distance: The estimated horizontal distance between the person objects
         :param securer_wall_distance: The calculated distance of the securer to the wall
         :param distance_to_fix_point: The calculated distance to the last passed fix point
         """
         if self.has_output_writer:
-            self.output_writer.write(person_positions, polygon_edges, fix_points, angle, distance,
+            self.output_writer.write(person_positions, fix_points, distance,
                                      securer_wall_distance, distance_to_fix_point)
 
     @property
