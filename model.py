@@ -150,7 +150,7 @@ class Model:
     @property
     def model(self):
         if self.hub_model is None:
-            print('Loading model with name {}...'.format(self.model_name))
+            print(f'Loading model with name {self.model_name}...')
             self.hub_model = hub.load(ALL_MODELS[self.model_name])
-            print('Successfully loaded model with name {}'.format(self.model_name))
+            print(f'Successfully loaded model with name {self.model_name}')
         return self.hub_model
