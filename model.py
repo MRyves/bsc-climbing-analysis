@@ -1,3 +1,5 @@
+from typing import Tuple, Dict
+
 import numpy as np
 import tensorflow_hub as hub
 from numpy.typing import NDArray
@@ -93,7 +95,7 @@ class Model:
         self.category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
         self.threshold = threshold
 
-    def analyze(self, frame: NDArray) -> tuple[NDArray, NDArray]:
+    def analyze(self, frame: NDArray) -> Tuple[NDArray, NDArray]:
         """
         Detect person object in given frame.
 
@@ -130,7 +132,7 @@ class Model:
 
         return frame_copy[0], person_boxes
 
-    def extract_person_boxes(self, result: dict) -> tuple[NDArray, NDArray]:
+    def extract_person_boxes(self, result: Dict) -> Tuple[NDArray, NDArray]:
         """
         Since only the 'person' object are of interest in further analysis, this method removes all other objects
         from the detection result.
