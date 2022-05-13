@@ -1,4 +1,6 @@
 import argparse
+import os.path
+import sys
 import time
 
 import numpy as np
@@ -49,6 +51,10 @@ if __name__ == "__main__":
     parser.add_argument('--distanceCamera', '-c', type=int, dest='distance_camera_wall', default=500,
                         help='The actual distance of the camera to the climbing wall')
     args = parser.parse_args()
+
+    if not os.path.exists(args.input):
+        print(f'Error: Input video `{args.input}` not found. Exiting...')
+        sys.exit(-1)
 
     video_reader = VideoReader(args.input, args.fps)
     bird_view = OutputVideoWriter(f'{args.output_folder}/{args.output_video_name}_birdview.avi',
