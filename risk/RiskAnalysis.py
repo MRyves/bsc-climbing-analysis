@@ -64,7 +64,7 @@ class RiskAnalysis:
             person_boxes_ordered)
         securer_wall_distance = self.wall_distance_risk.calc_distance(person_boxes_ordered)
         fix_points, distance_to_fix_point = self.fix_point_risk.analyze(frame, person_boxes_ordered)
-        print(f'Calculated horizontal distance: {distance}')
+        print(f'Calculated horizontal distance: {distance} cm')
         print(f'Estimated distance to wall: {securer_wall_distance} cm')
         self.write(box_centers, fix_points, distance, securer_wall_distance,
                    distance_to_fix_point)
