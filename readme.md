@@ -5,7 +5,7 @@ Follow these steps to install the Project locally:
 #### 1. Clone the project to the desired path:
 * `git clone https://github.com/MRyves/bsc-climbing-analysis.git`
 * `cd bsc-climbing-analysis`
-* `git checkout release-lastest`
+* `git checkout release-latest`
 #### 2. Create new python environment
 * `python -m venv ./py_env`
 * `source ./py_env/Scripts/activate`
