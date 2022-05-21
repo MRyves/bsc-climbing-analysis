@@ -151,6 +151,10 @@ class Model:
 
     @property
     def model(self):
+        """
+        Loads the internal model for object-detection
+        :return: The used model for object-detection if it was already loaded.
+        """
         if self.hub_model is None:
             print(f'Loading model with name {self.model_name}...')
             self.hub_model = hub.load(ALL_MODELS[self.model_name])

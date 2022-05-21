@@ -1,5 +1,6 @@
 from typing import Tuple
 from cv2 import VideoWriter, VideoWriter_fourcc, resize
+from numpy.typing import NDArray
 
 VIDEO_FORMAT = VideoWriter_fourcc(*'MJPG')
 
@@ -30,7 +31,7 @@ class OutputVideoWriter:
             self.__writer.release()
             self.__writer = None
 
-    def write(self, frame) -> None:
+    def write(self, frame: NDArray) -> None:
         """
         Write given frame to the output video
         :param frame: Image to add to the output video
